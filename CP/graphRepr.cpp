@@ -165,9 +165,16 @@ vector<vector<int>> getCycles(map<int,vector<int>> adjList){
 	return cycles;
 }
 
-int main(void){
+int main(int argc, char* argv[]){
 	vector<pair<int,int>> edges;
-	freopen("cycle.txt","r", stdin);
+	const char* fileName;
+	if(argc == 2){
+		fileName = argv[1];
+	}else{
+		string defaultFile= "cycle.txt";
+		fileName = defaultFile.c_str();
+	}
+	freopen(fileName,"r", stdin);
 	int n,x,y;
 	cin >> n ;
 	while(cin >> x >> y) edges.push_back({x,y});
