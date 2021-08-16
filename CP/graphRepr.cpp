@@ -72,22 +72,23 @@ void dfs(int st, map<int,vector<int>> adjList){
 
 void bfs(int st, map<int,vector<int>> adjList){
 	int n = adjList.size();
-	vector<int> visited(n,0), prev(n,0);
+	vector<int> visited(n,0), prev(n,-1), dist(n, INT_MAX);
 	queue<int> queuedToVisit;
 	queuedToVisit.push(st);
+	visited[st] = 1;
+	dist[st] = 0;
 	int curr_node;
 	while(!queuedToVisit.empty()){
 		curr_node = queuedToVisit.front();
 		queuedToVisit.pop();
-		if(visited[curr_node]) continue;
-
 		for(int adjNode : adjList[curr_node]){
-			if(adjNode != prev[curr_node]){
+			if(adjNode != prev[curr_node] && !visited[adjNode]){
 				prev[adjNode] = curr_node;
 				queuedToVisit.push(adjNode);
+				visited[adjNode] = 1;
 			}
 		}
-		visited[curr_node] = 1;
+		if(curr_node != st) dist[curr_node] = min(dist[prev[curr_node]] + 1, dist[curr_node]);
 		cout << curr_node << endl;
 	}
 }
