@@ -31,7 +31,35 @@ void printDistancesFromSt(pair<bool,vector<int>> res, int st){
 	else{
 		vector<int> dist = res.second;
 		for(int i = 0 ; i < dist.size() ; i++) cout << "dist from " << st << " to node " << i << " : " << dist[i] << endl;
+		cout << endl;
 	}
+}
+
+bool leastDistanceNode(pair<int,int> n1, pair<int,int> n2){
+	int w1, w2;
+	w1 = n1.second; w2 = n2.second;
+	return w1 > w2;
+}
+
+vector<int> djikstra(vector<vector<pair<int,int>>> weightedAdjList, int n, int st){
+	priority_queue<pair<int,int>, vector<pair<int,int>> , bool (*)(pair<int,int>, pair<int,int>)> pq(leastDistanceNode);
+	vector<int> visited(n,0);
+	vector<int> distance(n, INT_MAX);
+	distance[st] = 0;
+	for(int i = 0 ; i < n ; i++) pq.push({i, distance[i]});
+	while(!pq.empty()){
+		pair<int,int> node = pq.top(); pq.pop();
+		int v = node.first;
+		if(visited[v]) continue;
+		visited[v] = 1;
+		int v2, w;
+		for(pair<int,int> edge : weightedAdjList[v]){
+			v2 = edge.first; w = edge.second;
+			distance[v2] = min(distance[v2], distance[v] + w);
+			pq.push({v2, distance[v2]});
+		}
+	}
+	return distance;
 }
 
 int main(int argc, char* argv[]){
@@ -46,4 +74,13 @@ int main(int argc, char* argv[]){
 	int st = 0;
 	pair<bool,vector<int>> result  = bellmanFord(weightedEdges, n, st);
 	printDistancesFromSt(result, st);
+
+	vector<vector<pair<int,int>>> weightedAdjList(n, vector<pair<int,int>>());
+	for(tuple<int,int,int> wEdge : weightedEdges){
+		a = get<0>(wEdge); b = get<1>(wEdge); w = get<2>(wEdge);
+		weightedAdjList[a].push_back({b,w});
+	}
+
+	vector<int> distances = djikstra(weightedAdjList, n, st);
+	printDistancesFromSt(make_pair(false, distances), st);
 }
