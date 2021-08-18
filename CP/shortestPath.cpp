@@ -82,5 +82,5 @@ int main(int argc, char* argv[]){
 	}
 
 	vector<int> distances = djikstra(weightedAdjList, n, st);
-	printDistancesFromSt(make_pair(false, distances), st);
+	printDistancesFromSt({false, distances}, st);
 }
