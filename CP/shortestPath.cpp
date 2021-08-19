@@ -62,6 +62,38 @@ vector<int> djikstra(vector<vector<pair<int,int>>> weightedAdjList, int n, int s
 	return distance;
 }
 
+bool pathExists(int a, int b, vector<vector<int>> dist){
+	return dist[a][b] != INT_MAX;
+}
+
+pair<bool,vector<int>> floydWarshall(vector<tuple<int,int,int>> weightedEdges, int n, int st){
+	vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+	for(int i = 0; i < n ; i++) dist[i][i] = 0;
+	int a, b, w;
+	for(tuple<int,int,int> wEdge : weightedEdges){
+		a = get<0>(wEdge); b = get<1>(wEdge); w = get<2>(wEdge);
+		dist[a][b] = w;
+	}
+	for(int i = 0; i < n; i++){
+		for(int a = 0; a < n; a++){
+			for(int b = 0; b < n; b++){
+				if(pathExists(a,i,dist) && pathExists(i,b,dist)){
+					dist[a][b] = min(dist[a][b], dist[a][i] + dist[i][b]);
+				}
+			}
+		}
+	}
+	vector<int> distances(n);
+	for(int i = 0; i < n ; i++) distances[i] = dist[st][i];
+	bool isNegLenCycle = false;
+
+	for(int i = 0; i < n; i++){
+		isNegLenCycle |= (dist[i][i] < 0);
+	}
+	return {isNegLenCycle,distances};
+}
+
+//TODO: Recreate single source shortest paths
 int main(int argc, char* argv[]){
 	char* inpFile;
 	if(argc == 2) inpFile = argv[1];
@@ -83,4 +115,7 @@ int main(int argc, char* argv[]){
 
 	vector<int> distances = djikstra(weightedAdjList, n, st);
 	printDistancesFromSt({false, distances}, st);
+
+	result = floydWarshall(weightedEdges, n, st);
+	printDistancesFromSt(result, st);
 }
