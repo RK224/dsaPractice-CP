@@ -87,16 +87,66 @@ int diameter(pNode root){
 	return res.second;
 }
 
+void farthestLeaf(pNode st, vector<int> &distToLeaf){
+	int maxDistToLeaf = 0;
+	for(pNode child : st->children){
+		farthestLeaf(child, distToLeaf);
+	}
+
+	for(pNode child : st->children){
+		maxDistToLeaf = max(maxDistToLeaf, 1 + distToLeaf[child->value]);
+	}
+
+	distToLeaf[st->value] =  maxDistToLeaf;
+	return;
+}
+
+int farthestNodeThroughParent(pNode st, pNode excluded, vector<int> distToLeaf){
+	int maxThroughOtherChildren = INT_MIN;
+	for(pNode child : st->children){
+		if(child != excluded){
+			maxThroughOtherChildren = max(maxThroughOtherChildren, 1 + distToLeaf[child->value]);
+		}
+	}
+	int otherDir = INT_MIN;
+	if(st->parent != NULL){
+		otherDir = 1 + farthestNodeThroughParent(st->parent, st, distToLeaf);
+	}
+	return max(otherDir, maxThroughOtherChildren);
+}
+
+void farthestNodeInOtherDir(pNode root, vector<int> &distInOtherDir, vector<int> distToLeaf){
+	if(root->parent != NULL){
+	 	distInOtherDir[root->value] = 1 + farthestNodeThroughParent(root->parent, root, distToLeaf);
+	}
+
+	for(pNode child : root->children){
+		farthestNodeInOtherDir(child, distInOtherDir, distToLeaf);
+	}
+}
+
+vector<int> maxLenAllNodes(pNode root, int n){
+	vector<int> distToLeaf(n,0);
+	farthestLeaf(root, distToLeaf);
+	vector<int> distInOtherDir(n,0);
+	farthestNodeInOtherDir(root, distInOtherDir, distToLeaf);
+	vector<int> maxLen(n,0);
+	for(int i = 0; i < n; i++) maxLen[i] = max(distToLeaf[i], distInOtherDir[i]);
+	return maxLen;
+}
+
 int main(void){
 	pNode n1,n2,n3,n4,n5,n6,n7,n8;
-	n1 = getNode(1); n2 = getNode(2); n3 = getNode(3); n4 = getNode(4);
-	n5 = getNode(5); n6 = getNode(6); n7 = getNode(7); n8 = getNode(8);
+	n1 = getNode(0); n2 = getNode(1); n3 = getNode(2); n4 = getNode(3);
+	n5 = getNode(4); n6 = getNode(5); n7 = getNode(6); n8 = getNode(7);
+	pNode n9 = getNode(8);
 	addChild(n1, n2);
 	addChild(n1, n3);
 	addChild(n1, n4);
 	addChild(n2, n5);
 	addChild(n2, n6);
 	addChild(n6, n8);
+	addChild(n3, n9);
 	addChild(n4, n7);
 	dfs(n1);
 	cout << numberOfNodesInSubtree(n1) << endl;
@@ -110,5 +160,8 @@ int main(void){
 	cout << pathDist(n8,n7,n1) << endl;
 	cout << "diameter of tree rooted at " << n1 << " " << diameter(n1) << endl;
 	cout << "diameter of tree rooted at " << n2 << " " << diameter(n2) << endl;
+	int n = 9;
+	vector<int> maxLen = maxLenAllNodes(n1, n);
+	for(int i = 0 ; i < n; i++) cout << "node :: " << i << " " << maxLen[i] << endl;
 }
 
