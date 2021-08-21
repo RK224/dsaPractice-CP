@@ -108,6 +108,7 @@ int main(void){
 	cout << pathDist(n8,n2,n1) << endl;
 	cout << "bn n8 and n7" << endl;
 	cout << pathDist(n8,n7,n1) << endl;
-	cout << "diameter " << diameter(n1) << endl;
+	cout << "diameter of tree rooted at " << n1 << " " << diameter(n1) << endl;
+	cout << "diameter of tree rooted at " << n2 << " " << diameter(n2) << endl;
 }
 
