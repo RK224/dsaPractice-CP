@@ -34,9 +34,9 @@ void dfs(pNode root){
 }
 
 int numberOfNodesInSubtree(pNode root){
-	int nNodes = 0;
+	int nNodes = 1;
 	for(pNode child : root->children) nNodes += numberOfNodesInSubtree(child);
-	return nNodes+1;
+	return nNodes;
 }
 
 int longestPathSameSubtree(pNode st, pNode dest){
