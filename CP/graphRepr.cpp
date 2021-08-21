@@ -166,6 +166,25 @@ vector<vector<int>> getCycles(map<int,vector<int>> adjList){
 	return cycles;
 }
 
+
+void getSpanningTreeHelp(int st, map<int,vector<int>> adjList, vector<int> &visited, vector<pair<int,int>> &spanningTreeEdges){
+	visited[st] = 1;
+	for(int node : adjList[st]){
+		if(!visited[node]){
+			spanningTreeEdges.push_back({st, node});
+			getSpanningTreeHelp(node, adjList, visited, spanningTreeEdges);
+		}
+	}
+}
+
+vector<pair<int,int>> getSpanningTree(map<int,vector<int>> adjList){
+	vector<pair<int,int>> spanningTreeEdges;
+	int n = adjList.size();
+	vector<int> visited(n,0);
+	getSpanningTreeHelp(0, adjList, visited, spanningTreeEdges);
+	return spanningTreeEdges;
+}
+
 int main(int argc, char* argv[]){
 	vector<pair<int,int>> edges;
 	const char* fileName;
@@ -209,4 +228,8 @@ int main(int argc, char* argv[]){
 		for(int node : cycle) cout << node << " " ;
 		cout << endl;
 	}
+
+	vector<pair<int,int>> spanningTree = getSpanningTree(adjList);
+	cout << "Spanning Tree " << endl;
+	for(pair<int,int> edge : spanningTree) cout << edge.first << " " << edge.second << endl;
 }
