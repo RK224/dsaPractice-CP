@@ -59,6 +59,34 @@ int pathDist(pNode n1, pNode n2, pNode root){
 	}else return pathLen;
 }
 
+pair<int,int> max_two(int a, int b, int c){
+	vector<int> v = {a,b,c};
+	sort(v.begin(),v.end());
+	return { v[1], v[2] };
+}
+
+pair<int,int> diameterHelp(pNode root){
+	int p1, p2, d;
+	p1 = p2 = d = 0;
+	for(pNode child : root->children){
+		pair<int,int> res = diameterHelp(child);
+		d = max(d, res.second);
+		pair<int,int> p1_p2 = max_two(p1,p2, res.first);
+		p1 = p1_p2.first; p2 = p1_p2.second;
+	}
+	int n_c = (root->children).size();
+	int d_root = p1 + p2 + min(2, n_c);
+	int d_max = max(d_root, d);
+	int p_max = min(1, n_c) + max(p1,p2);
+	return {p_max,d_max};
+
+}
+
+int diameter(pNode root){
+	pair<int,int> res = diameterHelp(root);
+	return res.second;
+}
+
 int main(void){
 	pNode n1,n2,n3,n4,n5,n6,n7,n8;
 	n1 = getNode(1); n2 = getNode(2); n3 = getNode(3); n4 = getNode(4);
@@ -80,5 +108,6 @@ int main(void){
 	cout << pathDist(n8,n2,n1) << endl;
 	cout << "bn n8 and n7" << endl;
 	cout << pathDist(n8,n7,n1) << endl;
+	cout << "diameter " << diameter(n1) << endl;
 }
 
