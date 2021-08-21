@@ -39,21 +39,21 @@ int numberOfNodesInSubtree(pNode root){
 	return nNodes;
 }
 
-int longestPathSameSubtree(pNode st, pNode dest){
+int pathDistSameSubtree(pNode st, pNode dest){
 	if(st == dest) return 0;
 	else{
 		int pathLen = INT_MAX;
-		for(pNode child : st->children) pathLen = min(pathLen, longestPathSameSubtree(child,dest));
+		for(pNode child : st->children) pathLen = min(pathLen, pathDistSameSubtree(child,dest));
 		if(pathLen == INT_MAX) return pathLen;
 		else return pathLen + 1;
 	}
 }
 
-int longestPathDist(pNode n1, pNode n2, pNode root){
-	int pathLen = min(longestPathSameSubtree(n1,n2), longestPathSameSubtree(n2,n1));
+int pathDist(pNode n1, pNode n2, pNode root){
+	int pathLen = min(pathDistSameSubtree(n1,n2), pathDistSameSubtree(n2,n1));
 	if(pathLen == INT_MAX){
-		int root_n1 = longestPathSameSubtree(root, n1);
-		int root_n2 = longestPathSameSubtree(root, n2);
+		int root_n1 = pathDistSameSubtree(root, n1);
+		int root_n2 = pathDistSameSubtree(root, n2);
 		if(root_n1 != INT_MAX && root_n2 != INT_MAX) return root_n1 + root_n2;
 		else return INT_MAX;
 	}else return pathLen;
@@ -75,10 +75,10 @@ int main(void){
 	cout << numberOfNodesInSubtree(n2) << endl;
 	cout << numberOfNodesInSubtree(n4) << endl;
 	cout << "bn n1 and n8" << endl;
-	cout << longestPathDist(n1,n8,n1) << endl;
+	cout << pathDist(n1,n8,n1) << endl;
 	cout << "bn n8 and n2" << endl;
-	cout << longestPathDist(n8,n2,n1) << endl;
+	cout << pathDist(n8,n2,n1) << endl;
 	cout << "bn n8 and n7" << endl;
-	cout << longestPathDist(n8,n7,n1) << endl;
+	cout << pathDist(n8,n7,n1) << endl;
 }
 
