@@ -13,8 +13,8 @@ typedef unionFind* pUnionFind;
 pUnionFind getUnionFind(int nNodes){
 	pUnionFind pUF = new unionFind;
 	pUF->nNodes = nNodes;
-	(pUF->links).reserve(nNodes);
-	(pUF->size).reserve(nNodes);
+	pUF->links = vector<int>(nNodes,0);
+	pUF->size = vector<int>(nNodes,1);
 	return pUF;
 }
 
@@ -51,12 +51,45 @@ void combineComponents(int n1, int n2, pUnionFind pUF){
 void printUnionFind(pUnionFind pUF){
 	int nNodes = pUF->nNodes;
 	cout << "LINKS : ";
-	for(int i = 0 ; i < nNodes; i++) cout << i << "-->" << pUF->links[i] << " " ;
+	for(int i = 0 ; i < nNodes; i++) cout << i << "-->" << pUF->links[i] << "\t" ;
 	cout << endl << "SIZE : ";
-	for(int i = 0 ; i < nNodes; i++) cout << i << "-->" << pUF->size[i] << " " ;
+	for(int i = 0 ; i < nNodes; i++) cout << i << "-->" << pUF->size[i] << "\t" ;
 	cout << endl;
 }
 
+vector<tuple<int,int,int>> Kruskal(vector<tuple<int,int,int>> wEdges, int nNodes){
+	priority_queue<tuple<int,int,int>> pq;
+	vector<tuple<int,int,int>> minSpanningTree;
+	pUnionFind pUF = getUnionFind(nNodes);
+	initializeUnionFind(pUF);
+
+	int a,b, negW;
+	for(tuple<int,int,int> wEdge : wEdges){
+		a = get<0>(wEdge); b = get<1>(wEdge); negW = -1 * get<2>(wEdge);
+		pq.push({negW,a,b});
+	}
+
+	while(!pq.empty()){
+		tuple<int,int,int> wEdge = pq.top(); pq.pop();
+		negW = get<0>(wEdge); a = get<1>(wEdge); b = get<2>(wEdge);
+		if(!isSameComponent(a,b,pUF)) {
+			minSpanningTree.push_back({a, b, -1*negW});
+			combineComponents(a,b,pUF);
+		}
+	}
+
+	return minSpanningTree;
+}
+
+void printSpanningTree(vector<tuple<int,int,int>> spanningTree){
+	int totalWeight = 0;
+	int w;
+	for(tuple<int,int,int> edge : spanningTree){
+		w = get<2>(edge); totalWeight += w;
+		cout << get<0>(edge) << "-->" << get<1>(edge) << " " << w << endl;
+	}
+	cout << "Total weight " << totalWeight << endl;
+}
 
 int main(void){
 	vector<tuple<int,int,int>> wEdges;
@@ -72,4 +105,5 @@ int main(void){
 	combineComponents(0,1,pUF);
 	printUnionFind(pUF);
 	cout << "isSameComponent 0 and 1 : " << isSameComponent(0, 1, pUF) << endl;
+	printSpanningTree(Kruskal(wEdges, n));
 }
