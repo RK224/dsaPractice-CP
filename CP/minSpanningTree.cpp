@@ -91,9 +91,14 @@ void printSpanningTree(vector<tuple<int,int,int>> spanningTree){
 	cout << "Total weight " << totalWeight << endl;
 }
 
-int main(void){
+int main(int argc, char* argv[]){
 	vector<tuple<int,int,int>> wEdges;
-	freopen("weightedEdges.txt", "r", stdin);
+	char* filename;
+
+	if(argc == 2) filename = argv[1];
+	else filename = "weightedEdges.txt";
+
+	freopen(filename, "r", stdin);
 	int a,b,w,n;
 	cin >> n ;
 	while( cin >> a >> b >> w ) wEdges.push_back({a,b,w});
