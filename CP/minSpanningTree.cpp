@@ -139,11 +139,13 @@ int main(int argc, char* argv[]){
 	printSpanningTree(Kruskal(wEdges, n));
 
 	vector<vector<pair<int,int>>> adjList(n, vector<pair<int,int>>());
+
 	for(tuple<int,int,int> edge : wEdges){
 		int a,b,w;
 		a = get<0>(edge); b = get<1>(edge); w = get<2>(edge);
 		adjList[a].push_back({b,w});
 		adjList[b].push_back({a,w});
 	}
+
 	printSpanningTree(Prim(adjList,n));
 }
