@@ -54,6 +54,21 @@ void printTopologicalSort(vector<vector<int>> adjList, int n){
 	}
 }
 
+int numberPaths(int st, int en, vector<vector<int>> adjList, int n){
+	vector<int> sorted = topologicalSort(adjList, n);
+	vector<int> n_paths(n,0);
+	n_paths[en] = 1;
+	int r = n - 1;
+	while(sorted[r] != en) r--;
+	for(int i = r - 1; i >= 0 ; i--){
+		int v = sorted[i];
+		int nPaths_v = 0;
+		for(int node : adjList[v]) nPaths_v += n_paths[node];
+		n_paths[v] = nPaths_v;
+	}
+	return n_paths[st];
+}
+
 int main(int argc, char* argv[]){
 	bool fromTerm = true;
 	if(argc == 2){
@@ -68,6 +83,8 @@ int main(int argc, char* argv[]){
 	while( cin >> a >> b ) edges.push_back({a,b});
 	vector<vector<int>> adjList(n, vector<int>());
 	for(pair<int,int> edge : edges) adjList[edge.first].push_back(edge.second);
-	printTopologicalSort(adjList, n);
-
+	vector<int> sorted = topologicalSort(adjList, n);
+	int st, en;
+	st = sorted[2]; en = sorted[n-2];
+	cout << "Number of paths between " << st << " and " << en << " : " << numberPaths(st, en, adjList, n) << endl;
 }
