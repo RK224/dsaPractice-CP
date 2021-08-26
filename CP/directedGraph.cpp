@@ -14,18 +14,44 @@ int getUnprocessed(vector<int> state, int n){
 	return unprocessed;
 }
 
-void dfs(int st, vector<vector<int>> adjList, vector<int> state, vector<int> &sorted){
-	return;
+void dfs(int st, vector<vector<int>> adjList, vector<int> &state, vector<int> &sorted, bool &isCycle){
+	if (state[st] == 2) return ;
+	else if (state[st] == 1) {
+		isCycle = true; //Not possible to sort topologically because of cycle
+		return;
+	} else {
+		state[st] = 1;
+		for(int node : adjList[st]){
+			dfs(node, adjList, state, sorted, isCycle);
+		}
+		sorted.push_back(st);
+		state[st] = 2;
+	}
 }
 
 vector<int> topologicalSort(vector<vector<int>> adjList, int n){
 	vector<int> sorted;
 	vector<int> state(n,0); //0 -- not processed, 1 -- processing, 2 -- processed
 	int unprocessed;
+	bool isCycle = false;
 	while(( unprocessed = getUnprocessed(state,n) ) != -1){
-		dfs(unprocessed, adjList, state, sorted);
+		dfs(unprocessed, adjList, state, sorted, isCycle);
+		if(isCycle){
+			sorted.clear();
+			break;
+		}
 	}
+	reverse(sorted.begin(), sorted.end());
 	return sorted;
+}
+
+void printTopologicalSort(vector<vector<int>> adjList, int n){
+	vector<int> sorted = topologicalSort(adjList, n);
+	if(sorted.empty()) cout << "Graph contains a cycle, not possible to sort topologically" << endl;
+	else{
+		for(int node : sorted) cout << node << " " ;
+		cout << endl;
+	}
 }
 
 int main(int argc, char* argv[]){
@@ -42,6 +68,6 @@ int main(int argc, char* argv[]){
 	while( cin >> a >> b ) edges.push_back({a,b});
 	vector<vector<int>> adjList(n, vector<int>());
 	for(pair<int,int> edge : edges) adjList[edge.first].push_back(edge.second);
-	topologicalSort(adjList, n);
+	printTopologicalSort(adjList, n);
 
 }
