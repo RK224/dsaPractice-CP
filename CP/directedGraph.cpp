@@ -69,6 +69,35 @@ int numberPaths(int st, int en, vector<vector<int>> adjList, int n){
 	return n_paths[st];
 }
 
+vector<int> shortestPath(int st, int en, vector<vector<int>> adjList, int n){
+	vector<int> sorted = topologicalSort(adjList, n);
+	vector<int> dist(n, INT_MAX);
+	vector<vector<int>> shortest_path(n, vector<int>());
+	dist[en] = 0;
+	shortest_path[en].push_back(en);
+	int r = n-1;
+	while(sorted[r] != en) r--;
+
+	for(int i = r-1; i >= 0; i--){
+		int v = sorted[i];
+		int closestNode = -1;
+		int disFromV = INT_MAX;
+		for(int adjNode : adjList[v]){
+			if(dist[adjNode] < disFromV){
+				disFromV = dist[adjNode];
+				closestNode = adjNode;
+			}
+		}
+
+		if(disFromV != INT_MAX && closestNode != -1){
+			shortest_path[v].push_back(v);
+			dist[v] = 1 + disFromV;
+			shortest_path[v].insert(shortest_path[v].end(), shortest_path[closestNode].begin(), shortest_path[closestNode].end() );
+		}
+	}
+	return shortest_path[st];
+}
+
 int main(int argc, char* argv[]){
 	bool fromTerm = true;
 	if(argc == 2){
@@ -87,4 +116,9 @@ int main(int argc, char* argv[]){
 	int st, en;
 	st = sorted[2]; en = sorted[n-2];
 	cout << "Number of paths between " << st << " and " << en << " : " << numberPaths(st, en, adjList, n) << endl;
+//	st = 0; en = 5;
+	vector<int> shortest_path = shortestPath(st, en, adjList, n);
+	cout << "shortest path between " << st << " and " << en << " : " ;
+	for(int node : shortest_path) cout << node << " " ;
+	cout << endl;
 }
